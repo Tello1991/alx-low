@@ -1,58 +1,82 @@
-#include "lists.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-/**
- * delete_nodeint_at_index - deletes a node at an index
- * @head: pointer to the head of the list
- * @index: index of the node to be added
- *
- * Return: the address of the node
- */
-int delete_nodeint_at_index(listint_t **head, unsigned int index)
-{
-	listint_t *old_node = NULL;
-	listint_t *previous_node = NULL;
-	unsigned int i = 0, list_len = listint_len(*head);
+typedef struct listint_t {
+    int data;
+    struct listint_t *next;
+} listint_t;
 
-	if ((index > list_len) || (list_len == 0))
-		return (-1);
-	while (head != NULL)
-	{
-		if (i == index)
-		{
-			old_node = *head;
-			if (i == 0)
-			{
-				*head = old_node->next;
-				free(old_node);
-				return (1);
-			}
-			previous_node->next = old_node->next;
-			free(old_node);
-			return (1);
-		}
-		else if ((i + 1) == index)
-			previous_node = *head;
-		head = &((*head)->next);
-		i++;
-	}
-	return (-1);
+void deleteNodeAtIndex(listint_t **head, int index) {
+    if (*head == NULL) {
+        return; // List is empty
+    }
+
+    if (index == 0) {
+        listint_t *temp = *head;
+        *head = (*head)->next;
+        free(temp);
+        return;
+    }
+
+    listint_t *prev = NULL;
+    listint_t *current = *head;
+    int count = 0;
+
+    while (current != NULL && count < index) {
+        prev = current;
+        current = current->next;
+        count++;
+    }
+
+    if (current == NULL) {
+        return; // Index is out of bounds
+    }
+
+    prev->next = current->next;
+    free(current);
 }
 
-/**
- * listint_len - counts the number of nodes in a linked list
- * @h: head of the list
- *
- * Return: the number of elements
- */
-size_t listint_len(const listint_t *h)
-{
-	const listint_t *cursor = h;
-	size_t count = 0;
+void printList(listint_t *head) {
+    listint_t *current = head;
 
-	while (cursor != NULL)
-	{
-		count += 1;
-		cursor = cursor->next;
-	}
-	return (count);
+    while (current != NULL) {
+        printf("%d ", current->data);
+        current = current->next;
+    }
+
+    printf("\n");
+}
+
+int main() {
+    // Create a sample linked list
+    listint_t *node1 = malloc(sizeof(listint_t));
+    node1->data = 1;
+    
+    listint_t *node2 = malloc(sizeof(listint_t));
+    node2->data = 2;
+    
+    listint_t *node3 = malloc(sizeof(listint_t));
+    node3->data = 3;
+    
+    node1->next = node2;
+    node2->next = node3;
+    node3->next = NULL;
+
+    // Print the original linked list
+    printf("Original linked list: ");
+    printList(node1);
+
+    // Delete node at index 1
+    deleteNodeAtIndex(&node1, 1);
+
+    // Print the modified linked list
+    printf("Linked list after deletion: ");
+    printList(node1);
+
+    // Free memory
+    free(node1);
+    free(node2);
+    free(node3);
+
+    return 0;
 }
